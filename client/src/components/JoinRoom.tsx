@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { useSocket } from "../providers/socket-provider";
 import { useNavigate } from "react-router-dom";
 
