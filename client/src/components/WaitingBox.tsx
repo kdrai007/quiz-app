@@ -28,7 +28,7 @@ export const WaitingBox = () => {
     }
   }, [socket]);
   return (
-    <div className="border-2 border-black h-[60%] w-[50%] rounded-md px-4">
+    <div className="border-2 border-black h-[60%] w-[50%] rounded-md px-4 mt-10">
       <div className="text-center mt-2 font-bold">Waiting Room ...</div>
       {roomId !== null && <h3 className="">roomId is {roomId}</h3 >}
       {user.length !== 0 && user.map((u: User) => <p className="" key={u.id}>{u.userName}</p  >)}

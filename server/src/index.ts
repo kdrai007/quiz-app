@@ -5,7 +5,6 @@ interface Room {
   [key: string]: string[]
 }
 
-var userId = 1;
 const rooms: Room = {};
 io.on("connection", (socket) => {
 
@@ -22,12 +21,11 @@ io.on("connection", (socket) => {
     if (rooms[roomId]) {
       rooms[roomId].push(userName);
     }
-
+    console.log("new user joined the room ", userName)
+    socket.emit("check code", { isCorrect: true })
   })
 
-  socket.on("disconnect", () => {
-    // console.log("user with socket id disconnected", socket.id);
-  });
+  socket.on("disconnect", () => { });
 });
 
 io.listen(3000);

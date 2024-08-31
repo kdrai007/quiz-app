@@ -1,16 +1,18 @@
 import { useNavigate } from "react-router-dom";
-import { randomId, userName as user } from "../utils/util";
+import { randomId } from "../utils/util";
 import { useSocket } from "../providers/socket-provider";
+import { useUser } from "../context/user-context";
 
 export const Field = () => {
+  const { user, setUser } = useUser();
   const navigate = useNavigate();
   const { socket } = useSocket();
 
   function handleCreateRoom() {
-    const userName: string = user;
     const roomId = randomId();
+    setUser({ ...user, createdRoom: [...user.createdRoom, roomId] });
     if (socket) {
-      socket.emit("create room", { roomId, userName })
+      socket.emit("create room", { roomId, user: user.userName })
       socket.on("room created", ({ roomId }) => {
         console.log(roomId);
       })
