@@ -5,4 +5,4 @@ export function randomId(len = 4) {
   }
   return id;
 }
-export const userName: string = "kdrai";
+

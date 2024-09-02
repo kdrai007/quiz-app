@@ -3,24 +3,33 @@ import { useSocket } from "../providers/socket-provider";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/user-context";
 
-export const JoinRoom = () => {
-  const { user } = useUser();
+export const JoinRoom = ({ manageNotification }: { manageNotification: (message: string, type: "success" | "error") => void }) => {
+  const { user, setRoomMembers } = useUser();
   const { socket } = useSocket();
 
   const navigate = useNavigate();
   const codeRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = () => {
-    if (codeRef.current) {
+    if (codeRef.current && socket) {
       const code = codeRef.current.value
 
-      socket?.emit("join room", {
+      socket.emit("join room", {
         userName: user.userName,
         roomId: code
       })
-      socket?.on("check code", (value) => {
-        if (value?.isCorrect) navigate("/waiting-room", { state: { roomId: code } });
+      socket.on("existing users", ({ users }) => {
+        console.log(users);
+        setRoomMembers(users);
       })
+      socket.on("check code", ({ isCorrect }) => {
+        if (isCorrect) {
+          navigate("/waiting-room", { state: { roomId: code } })
+          manageNotification("Successfully Joined", "success")
+          return;
+        };
+      })
+      manageNotification("Incorrect Code", "error")
     }
   }
 

@@ -12,7 +12,7 @@ export const Field = () => {
     const roomId = randomId();
     setUser({ ...user, createdRoom: [...user.createdRoom, roomId] });
     if (socket) {
-      socket.emit("create room", { roomId, user: user.userName })
+      socket.emit("create room", { roomId, userName: user.userName })
       socket.on("room created", ({ roomId }) => {
         console.log(roomId);
       })
