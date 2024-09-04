@@ -7,6 +7,7 @@ import { NavBar } from "./components/NavBar";
 import { WaitingBox } from "./components/WaitingBox";
 import { useUser } from "./context/user-context";
 import { Notification } from "./components/Notification";
+import { QuizRoom } from "./components/QuizRoom";
 
 interface Notification {
   message: string;
@@ -45,6 +46,7 @@ function App() {
             <Route path="/" element={<Field />} />
             <Route path="/waiting-room" element={<WaitingBox manageNotification={manageNotification} />} />
             <Route path="/join" element={<JoinRoom manageNotification={manageNotification} />} />
+            <Route path="quiz-room" element={<QuizRoom />} />
           </Routes>
         </div >
       </Router>

@@ -1,11 +1,12 @@
 import { useEffect } from "react";
 import { useSocket } from "../providers/socket-provider";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useUser } from "../context/user-context";
 
 export const WaitingBox = ({ manageNotification }: { manageNotification: (message: string, type: "success" | "error") => void }) => {
   const { socket } = useSocket();
   const location = useLocation();
+  const navigate = useNavigate();
   const roomId = location.state?.roomId;
   const { user, setRoomMembers, roomMembers } = useUser();
 
@@ -26,8 +27,8 @@ export const WaitingBox = ({ manageNotification }: { manageNotification: (messag
 
     // Handle receiving the start quiz event
     const handleStartQuiz = ({ message }: { message: string }) => {
-      console.log(message);
       manageNotification(message, "success");
+      navigate("/quiz-room", { state: { roomId } });
     };
 
     // Set up the event listeners
@@ -45,6 +46,7 @@ export const WaitingBox = ({ manageNotification }: { manageNotification: (messag
     if (socket) {
       socket.emit("start quiz", { roomId })
       manageNotification("Quiz Started", "success")
+      navigate("/quiz-room")
     }
   }
   function deleteRoom() {
