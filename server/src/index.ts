@@ -19,10 +19,25 @@ io.on("connection", (socket) => {
   })
   socket.on("join room", ({ roomId, userName }) => {
     if (rooms[roomId]) {
-      rooms[roomId].push(userName);
+      if (!rooms[roomId].includes(userName)) {
+        rooms[roomId].push(userName);
+        socket.join(roomId)
+        // new user get existing users
+        const existingUsers = rooms[roomId];
+        console.log(existingUsers);
+        socket.emit("existing users", { users: existingUsers })
+        // boradcasting the new user to existing users
+        socket.in(roomId).emit("new user", { userName });
+        console.log("new user joined the room ", userName)
+        socket.emit("check code", { isCorrect: true })
+      }
     }
-    console.log("new user joined the room ", userName)
-    socket.emit("check code", { isCorrect: true })
+  })
+
+  socket.on("start quiz", ({ roomId }) => {
+    if (rooms[roomId]) {
+      socket.to(roomId).emit("start quiz", { message: "starting quiz! let's goooooo!" })
+    }
   })
 
   socket.on("disconnect", () => { });

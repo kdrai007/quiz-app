@@ -8,7 +8,7 @@ interface User {
 interface UserContext {
   user: User;
   roomMembers: string[];
-  setRoomMembers: (roomMember: string[]) => void;
+  setRoomMembers: (roomMembers: any) => void;
   setUser: (user: User) => void;
 }
 const UserContext = createContext<UserContext>({

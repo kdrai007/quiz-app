@@ -43,7 +43,7 @@ function App() {
         <div className="flex justify-center w-full h-full ">
           <Routes>
             <Route path="/" element={<Field />} />
-            <Route path="/waiting-room" element={<WaitingBox />} />
+            <Route path="/waiting-room" element={<WaitingBox manageNotification={manageNotification} />} />
             <Route path="/join" element={<JoinRoom manageNotification={manageNotification} />} />
           </Routes>
         </div >

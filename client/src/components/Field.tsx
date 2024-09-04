@@ -14,7 +14,7 @@ export const Field = () => {
     if (socket) {
       socket.emit("create room", { roomId, userName: user.userName })
       socket.on("room created", ({ roomId }) => {
-        console.log(roomId);
+        user.createdRoom.push(roomId);
       })
 
       navigate("/waiting-room", { state: { roomId } });
