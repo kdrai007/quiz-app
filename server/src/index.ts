@@ -39,20 +39,17 @@ io.on("connection", (socket) => {
       socket.to(roomId).emit("start quiz", { message: "starting quiz! let's goooooo!" })
     }
   })
-  socket.on("quiz answer", ({ roomId, answer, quizId }) => {
+  socket.on("quiz answer", ({ userName, roomId, answer, quizId }) => {
+    console.log("incoming answer", answer);
+    socket.to(roomId).emit("quiz answer", { answer, userName })
+  })
+
+  socket.on("next quiz", ({ roomId, setIndex }) => {
     if (rooms[roomId]) {
-      const userName = socket.id;
-      const room = rooms[roomId];
-      const correctAnswer = room[quizId - 1];
-      if (answer === correctAnswer) {
-        socket.to(roomId).emit("quiz answer", { message: "Correct Answer!", userName })
-        socket.in(roomId).emit("quiz answer", { message: "Correct Answer!", userName })
-      } else {
-        socket.to(roomId).emit("quiz answer", { message: "Wrong Answer!", userName })
-        socket.in(roomId).emit("quiz answer", { message: "Wrong Answer!", userName })
-      }
+      socket.to(roomId).emit("next quiz", { setIndex })
     }
   })
+
   socket.on("disconnect", () => { });
 });
 

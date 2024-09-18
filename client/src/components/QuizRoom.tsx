@@ -1,11 +1,14 @@
-import { useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { useUser } from "../context/user-context";
 import { useSocket } from "../providers/socket-provider";
 
 export const QuizRoom = () => {
+    const [quizIndex, setQuizIndex] = useState(0);
     const location = useLocation();
     const roomId = location.state?.roomId
+    const navigate = useNavigate()
     const { socket } = useSocket()
     const { user } = useUser();
     const quizes = [
@@ -34,13 +37,26 @@ export const QuizRoom = () => {
             socket.emit("quiz answer", { userName: user.userName, roomId, answer, quizId: id })
         }
     }
-    return <div className="flex flex-col gap-4 items-start mt-40">
-        {quizes.map((quiz, index) => <div key={index} className="flex flex-col gap-2 items-start">
-            <h2 className="text-2xl">{quiz.question}</h2>
-            {quiz.options.map((option, index) => <div className="space-x-2" key={index}>
-                <input id={'option-' + quiz.id + index} className="p-2" type="radio" name={quiz.question} value={option} onChange={(e) => handleChange(e, quiz.id)} />
-                <label htmlFor={'option-' + quiz.id + index}>{option}</label>
+    useEffect(() => {
+        if (!roomId)
+            navigate("/")
+
+        socket?.on("quiz answer", ({ answer, userName }) => {
+            console.log("user " + userName + " answered " + answer);
+        })
+
+    }, [socket])
+
+    if (roomId) {
+        return <div className="flex flex-col gap-4 items-start mt-40">
+            {quizes.map((quiz, index) => <div key={index} className="flex flex-col gap-2 items-start">
+                <h2 className="text-2xl">{quiz.question}</h2>
+                {quiz.options.map((option, index) => <div className="space-x-2" key={index}>
+                    <input id={'option-' + quiz.id + index} className="p-2" type="radio" name={quiz.question} value={option} onChange={(e) => handleChange(e, quiz.id)} />
+                    <label htmlFor={'option-' + quiz.id + index}>{option}</label>
+                </div>)}
             </div>)}
-        </div>)}
-    </div>
+        </div>
+    }
+    return null;
 }

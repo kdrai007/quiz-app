@@ -46,7 +46,7 @@ export const WaitingBox = ({ manageNotification }: { manageNotification: (messag
     if (socket) {
       socket.emit("start quiz", { roomId })
       manageNotification("Quiz Started", "success")
-      navigate("/quiz-room")
+      navigate("/quiz-room", { state: { roomId } })
     }
   }
   function deleteRoom() {
@@ -63,7 +63,7 @@ export const WaitingBox = ({ manageNotification }: { manageNotification: (messag
         {roomId !== null && user.createdRoom.includes(roomId) &&
           <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-2 rounded" onClick={deleteRoom}>Delete Room</button>
         }
-        {roomId !== null && user.createdRoom.includes(roomId) && roomMembers.length > 1 && <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={StartQuiz}>start quiz</button>}
+        {roomId !== null && user.createdRoom.includes(roomId) && roomMembers.length > 0 && <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={StartQuiz}>start quiz</button>}
       </div>
     </div>
   );
