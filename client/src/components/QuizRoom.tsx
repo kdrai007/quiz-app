@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 import { useUser } from "../context/user-context";
 import { useSocket } from "../providers/socket-provider";
+import { Quiz } from "./Quiz";
 
 export const QuizRoom = () => {
     const [quizIndex, setQuizIndex] = useState(0);
@@ -31,31 +32,46 @@ export const QuizRoom = () => {
             answer: "steave smith"
         }
     ]
+    useEffect(() => {
+        if (!roomId) {
+            navigate("/")
+        }
+        const handleQuizAnswer = ({ answer, userName }: { answer: string, userName: string }) => {
+            console.log("user " + userName + " answered " + answer);
+        }
+
+        socket?.on("quiz answer", handleQuizAnswer)
+
+        socket?.on("next quiz", ({ setIndex }) => {
+            setQuizIndex(setIndex)
+        })
+        return () => {
+            socket?.off("quiz answer", handleQuizAnswer);
+        }
+    }, [socket])
+
+
     const handleChange = (e: any, id: number) => {
         const answer = e.target.value;
         if (socket) {
             socket.emit("quiz answer", { userName: user.userName, roomId, answer, quizId: id })
         }
     }
-    useEffect(() => {
-        if (!roomId)
-            navigate("/")
 
-        socket?.on("quiz answer", ({ answer, userName }) => {
-            console.log("user " + userName + " answered " + answer);
-        })
-
-    }, [socket])
+    function handleCurrentQuiz() {
+        const quizSize = quizes.length - 1;
+        if (quizIndex < quizSize) {
+            socket?.emit("next quiz", { roomId, setIndex: quizIndex + 1 })
+            setQuizIndex(quizIndex + 1);
+        }
+    }
 
     if (roomId) {
-        return <div className="flex flex-col gap-4 items-start mt-40">
-            {quizes.map((quiz, index) => <div key={index} className="flex flex-col gap-2 items-start">
-                <h2 className="text-2xl">{quiz.question}</h2>
-                {quiz.options.map((option, index) => <div className="space-x-2" key={index}>
-                    <input id={'option-' + quiz.id + index} className="p-2" type="radio" name={quiz.question} value={option} onChange={(e) => handleChange(e, quiz.id)} />
-                    <label htmlFor={'option-' + quiz.id + index}>{option}</label>
-                </div>)}
-            </div>)}
+        return <div className="flex flex-col gap-4 items-start mt-40 max-w-xl">
+            <Quiz quiz={quizes[quizIndex]} handleChange={handleChange} />
+            <div>
+                {quizIndex < quizes.length - 1 && <button className="bg-black px-4 py-2 hover:bg-black/80 rounded-md text-white" onClick={handleCurrentQuiz}>Next</button>}
+            </div>
         </div>
     }
     return null;
